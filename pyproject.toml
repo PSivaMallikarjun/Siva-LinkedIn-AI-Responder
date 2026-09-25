@@ -1,0 +1,28 @@
+[project]
+name = "siva_linkedin_ai_responder"
+version = "0.1.0"
+description = "siva_linkedin_ai_responder using crewAI"
+authors = [{ name = "Your Name", email = "you@example.com" }]
+requires-python = ">=3.10,<3.14"
+dependencies = [
+    "crewai[file-processing,litellm,tools]>=1.15.22,<2.0.0",
+]
+
+[project.scripts]
+siva_linkedin_ai_responder = "siva_linkedin_ai_responder.main:run"
+run_crew = "siva_linkedin_ai_responder.main:run"
+train = "siva_linkedin_ai_responder.main:train"
+replay = "siva_linkedin_ai_responder.main:replay"
+test = "siva_linkedin_ai_responder.main:test"
+run_with_trigger = "siva_linkedin_ai_responder.main:run_with_trigger"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.crewai]
+type = "crew"
+project_id = "1aa138f9-e666-46cd-91ff-fb4fd6692c35"
+
+[tool.uv]
+override-dependencies = ["litellm<=1.82.6"]

@@ -1,0 +1,81 @@
+---
+classify_linkedin_message:
+  description: |-
+    Analyze the incoming LinkedIn message and classify it into exactly one of these categories: `recruiter`, `recommendation`, `connection_request`, `collaboration`, `cold_pitch`, `technical_discussion`, `generic_greeting`.
+
+    Sender: {sender_name}
+    Sender Headline: {sender_headline}
+    Message: {message_content}
+    Thread History: {thread_history} (use "none" if empty)
+
+    Use the thread history for additional context if available. Output the classification label and a one-line rationale explaining your decision.
+  expected_output: |-
+    A JSON object with two fields:
+    - `message_type`: one of `recruiter`, `recommendation`, `connection_request`, `collaboration`, `cold_pitch`, `technical_discussion`, `generic_greeting`
+    - `rationale`: a single sentence explaining why this classification was chosen
+  agent: linkedin_message_classification_specialist
+draft_linkedin_reply:
+  description: |-
+    Using the message classification from the previous task, draft a reply to {sender_name}'s message as Siva Mallikarjun Parvatham.
+
+    Original message: {message_content}
+    Sender headline: {sender_headline}
+    Thread history: {thread_history}
+
+    Strictly follow Siva's persona rules:
+    - Write in first person as Siva
+    - Warm, humble-confident tone
+    - 3–5 lines max
+    - No robotic sign-offs, no "On behalf of..." signatures
+    - Never reveal you are an AI
+    - For recruiters: only engage for GenAI/LLM/Agentic AI/FinTech roles; ask for JD; decline others in one line
+    - For cold pitches/sales: decline in exactly one polite line
+    - For recommendations: sincere, specific gratitude; offer to return the recommendation
+    - For collaboration: express interest, ask what they're building
+    - For technical discussions: engage with relevant stack references
+    - For generic greetings: respond warmly, ask how you can help
+
+    Output ONLY the reply text. No labels, no preamble, no metadata.
+  expected_output: The final reply text only — exactly as it should be sent on LinkedIn.
+    No labels, no preamble, no quotes around it.
+  agent: siva_s_personal_linkedin_voice_agent
+  context:
+  - classify_linkedin_message
+send_reply_via_unipile:
+  description: |-
+    Send the drafted LinkedIn reply to {sender_name} via the Unipile API.
+
+    Use the UnipileSendMessageTool with:
+    - `chat_id`: {chat_id} — the Unipile conversation/chat ID for this thread
+    - `reply_text`: the drafted reply from the previous task
+
+    Confirm whether the delivery was successful or report the failure with details.
+  expected_output: A confirmation message stating whether the reply was successfully
+    sent via Unipile, including the HTTP status code. If it failed, include the error
+    details.
+  agent: linkedin_outbound_message_dispatcher
+  async_execution: true
+  context:
+  - draft_linkedin_reply
+log_interaction_to_google_sheets:
+  description: |-
+    Append a new row to Siva's LinkedIn interaction log in Google Sheets.
+
+    Use the GoogleSheetsAppendRowTool with:
+    - `apps_script_url`: https://script.google.com/macros/s/AKfycbwilwIwhteT2juMId9D0oIrDplVnbiGm3Ux6fpS29q4ZXJXuuz-b6GJYuIOmSGJkNFP/exec
+    - `row_data`: a list containing these values in order:
+      1. Current UTC timestamp (ISO format)
+      2. {sender_name}
+      3. {sender_headline}
+      4. {message_content}
+      5. The message type from the classification task
+      6. The drafted reply text
+
+    Confirm the row was successfully appended.
+  expected_output: A confirmation message that the row was appended to the Google
+    Sheet, including the row values logged. If it failed, include the error details.
+  agent: conversation_log_manager
+  context:
+  - classify_linkedin_message
+  - draft_linkedin_reply
+  - send_reply_via_unipile
