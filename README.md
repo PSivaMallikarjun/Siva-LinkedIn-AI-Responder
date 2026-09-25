@@ -1,6 +1,81 @@
-# SivaLinkedinAiResponder Crew
+# 🤖 siva-linkedin-ai-responder
 
-Welcome to the SivaLinkedinAiResponder Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+![CrewAI](https://img.shields.io/badge/Built%20with-CrewAI-blue) ![Python](https://img.shields.io/badge/Python-3.10%2B-green) ![License](https://img.shields.io/badge/License-MIT-yellow)
+
+> A multi-agent CrewAI automation that reads, classifies, and replies to LinkedIn messages in Siva's voice — fully automated.
+
+---
+
+## 🧠 Overview
+
+This automation listens to incoming LinkedIn messages via **Unipile's webhook**, classifies them by intent, drafts a contextual reply in **Siva's personal tone**, sends it back on LinkedIn, and logs the full interaction to **Google Sheets**.
+
+---
+
+## 🔄 Architecture
+
+```
+Unipile Webhook (Incoming LinkedIn Message)
+              ↓
+   [1] Message Classifier Agent
+              ↓
+   [2] Reply Drafting Agent
+              ↓
+     ┌────────┴────────┐
+[3] Unipile Sender   [4] Google Sheets Logger
+```
+
+---
+
+## 🤖 Agents
+
+| # | Agent | Role |
+|---|-------|------|
+| 1 | **Message Classifier** | Categorizes the message: `recruiter`, `collaboration`, `cold_pitch`, `recommendation`, `connection_request`, `technical_discussion`, `generic_greeting` |
+| 2 | **Siva's Voice Agent** | Drafts a reply in Siva's humble-confident first-person tone |
+| 3 | **Unipile Dispatcher** | POSTs the reply to Unipile API for LinkedIn delivery |
+| 4 | **Google Sheets Logger** | Appends a timestamped row with all interaction details |
+
+---
+
+## 🛠️ Tech Stack
+
+- [CrewAI](https://crewai.com) — Multi-agent orchestration
+- [Python 3.10+](https://python.org)
+- [Unipile API](https://unipile.com) — LinkedIn messaging
+- [Google Apps Script](https://script.google.com) — Sheets integration
+- [Google Sheets](https://sheets.google.com) — Interaction logging
+
+---
+
+## ⚙️ Setup & Configuration
+
+Set the following environment variables:
+
+```env
+UNIPILE_API_KEY=your_unipile_api_key
+UNIPILE_DSN=your_unipile_dsn_url
+UNIPILE_ACCOUNT_ID=your_unipile_account_id
+APPS_SCRIPT_URL=your_google_apps_script_web_app_url
+```
+
+---
+
+## 🚀 How It Works
+
+1. Unipile detects a new LinkedIn message and sends a webhook payload
+2. The **Classifier Agent** reads the message and assigns a category
+3. The **Voice Agent** drafts a reply following Siva's persona rules
+4. The **Dispatcher** sends the reply back via Unipile's API
+5. The **Logger** records everything to Google Sheets
+
+---
+
+## 👤 Author
+
+**Siva Mallikarjun Parvatham**  
+Senior Software Developer & GenAI Specialist @ Wipro, Hyderabad  
+[LinkedIn](https://linkedin.com/in/siva-mallikarjun-parvatham)
 
 ## Installation
 
